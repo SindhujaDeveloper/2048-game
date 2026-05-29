@@ -1,17 +1,12 @@
 "use client";
 import { useEffect, useState } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
 import styles from "./page.module.css";
-import { Button, Container, Modal } from "react-bootstrap";
-import Chatbot from "./chatbot";
-import askImage from "../app/assets/ask.jpg";
 
 const Home = () => {
   const initialBoard = Array.from({ length: 4 }, () => Array(4).fill(0));
 
   const [keyCode, setKeyCode] = useState(0);
   const [direction, setDirection] = useState("");
-  const [isShow, setIsShow] = useState(false);
 
   const fillInitialRandomCell = (initialBoard: number[][]) => {
     const rowIndex = Math.floor(Math.random() * 4);
@@ -21,7 +16,7 @@ const Home = () => {
     }
     return initialBoard;
   };
-  
+
   const [board, setBoard] = useState(fillInitialRandomCell(initialBoard));
 
   const handleKeyPress = (event: any) => {
@@ -257,57 +252,68 @@ const Home = () => {
   };
 
   return (
-    <Container style={{}}>
+    <div className={styles.container}>
       <h1 className={`text-center ${styles.title}`}>2048 Game</h1>
       <div className={styles.main}>
-        <div
-          className={styles.gameBoard}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-        >
-          {board.map((row, rowIndex) => (
-            <div key={rowIndex} className={styles.row}>
-              {row.map((cellValue, colIndex) => (
-                <div
-                  key={colIndex}
-                  className={`${styles.cell} ${styles[`tile-${cellValue}`]}`}
-                >
-                  {cellValue !== 0 ? cellValue : ""}
+        <div className={styles.leftSection}>
+          <div className={styles.boardContainer}>
+            <div
+              className={styles.gameBoard}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            >
+              {board.map((row, rowIndex) => (
+                <div key={rowIndex} className={styles.row}>
+                  {row.map((cellValue, colIndex) => (
+                    <div
+                      key={colIndex}
+                      className={`${styles.cell} ${cellValue !== 0 ? styles[`tile-${cellValue}`] : ""} ${cellValue !== 0 ? styles.tileNew : ""}`}
+                    >
+                      {cellValue !== 0 ? cellValue : ""}
+                    </div>
+                  ))}
                 </div>
               ))}
             </div>
-          ))}
+            {isGameOver() && (
+              <div className={styles.gameOverlay}>
+                <div className={styles.gameOverMessage}>Game Over</div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className={styles.rightSection}>
+          <div className={styles.instructions}>
+            <h2>How to play</h2>
+            <ol className={styles.instructionList}>
+              <li>Use your <strong>arrow keys</strong> or swipe on mobile to move the tiles.</li>
+              <li>Every turn, a new tile (2 or 4) appears on an empty spot.</li>
+              <li>Tiles slide as far as possible in the chosen direction.</li>
+              <li>When two tiles with the same number touch, they <strong>merge into one!</strong></li>
+              <li>Keep merging tiles to increase their values (8, 16, 32...).</li>
+              <li>Create a tile with the number <strong>2048</strong> to win!</li>
+              <li>Plan your moves carefully to avoid filling the board!</li>
+            </ol>
+          </div>
         </div>
       </div>
-      {isGameOver() && (
-        <div className={styles.gameOverlay}>
-          <div className={styles.gameOverMessage}>Game Over</div>
-        </div>
-      )}
       <div className={styles.buttons}>
-        <Button
+        <button
           className={styles.newGameBtn}
-          variant="info"
           onClick={() => setBoard(initialBoard)}
         >
           New Game
-        </Button>
-        <Button
+        </button>
+        <button
           className={styles.resetBtn}
-          variant="danger"
           onClick={() => setBoard(initialBoard)}
         >
           Reset
-        </Button>
-        
+        </button>
       </div>
-
-      <div className={styles.askImageContainer} onClick={() => setIsShow(true)}>
-        <img src={askImage?.src} alt="Ask" className={styles.askImage} />
-      </div>
-      <Chatbot isModalOpen={isShow} modalClose={() => setIsShow(false)} />
-    </Container>
+    </div>
   );
 }
 
